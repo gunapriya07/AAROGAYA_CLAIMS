@@ -1,36 +1,47 @@
-const express = require('express');
-const mongoose =require("mongoose")
-const connectDB=require("./config/db")
-connectDB()
+const express = require("express");
+const mongoose = require("mongoose");
+const connectDB = require("./config/db");
+const routes = require("./routes");
+const claimsRouter = require("./Route/claimsRouter");
+const QuestionsRouter = require("./Route/QuestionRouter");
+
+
 const app = express();
 const PORT = 4001;
 
-// Route for the root endpoint
-app.get('/', (req, res) => {
-  res.send('ASAP Project - Endpoint!');
+// Connect to MongoDB
+connectDB();
+
+// Middleware
+app.use(express.json());
+app.use("/api", routes); 
+app.use("/claimapi", claimsRouter);
+app.use("/questionapi",QuestionsRouter);
+
+// Basic Routes
+app.get("/", (req, res) => {
+  res.send("ASAP Project - Endpoint!");
 });
 
-// Route for the /ping endpoint
-app.get('/ping', (req, res) => {
-  res.send('Pong!');
+app.get("/ping", (req, res) => {
+  res.send("Pong!");
 });
 
-// Error handling middleware
+// Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+  res.status(500).send("Something went wrong!");
 });
 
+// Check if MongoDB is connected
+mongoose.connection.once("open", () => {
+  console.log("Connected to MongoDB");
+});
 
-
-mongoose.connection.once('open', () => {
-  console.log('Connected to MongoDB');
-})
-
-// Start the server
+// Start Server
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Export the server for testing
+// Export server for testing
 module.exports = server;
