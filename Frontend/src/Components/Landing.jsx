@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Typography, TextField } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link } from "react-router-dom";
+
+
+
 import {
     Card,
     CardHeader,
@@ -79,16 +82,16 @@ const LANDING = () => {
         </Typography>
         </div>
          <div className="flex items-center space-x-4">
-          {/* <Link to="/Register"> */}
-           <Button
-             variant="contained"
-             color="inherit"
-             className="text-pink-500 font-medium"
-             style={{ borderRadius: '20px' }}
-           >
-             Register
-           </Button>
-           {/* </Link> */}
+         <Link to="/register">
+  <Button
+    variant="contained"
+    color="inherit"
+    className="text-pink-500 font-medium"
+    style={{ borderRadius: '20px' }}
+  >
+    Register
+  </Button>
+</Link>
          </div>
        </nav>
 
@@ -162,7 +165,7 @@ const LANDING = () => {
        <div className="bg-white py-16">
          <div className="container mx-auto px-4">
            <Typography variant="h3" className="text-gray-800 text-center font-bold text-3xl mb-12 relative">
-             Title
+            Zero Hassle
              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-pink-500 mt-2"></div>
            </Typography>
 
@@ -170,10 +173,7 @@ const LANDING = () => {
            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mt-16">
              <div className="space-y-4">
                <Typography variant="h4" className="text-gray-800 font-bold text-2xl">
-                 Lorem ipsum dolor sit amet
-               </Typography>
-               <Typography variant="body1" className="text-gray-600">
-                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at ipsum eu nunc commodo posuere et sit amet ligula.
+               "No paperwork, no stress—just submit your claim online."
                </Typography>
              </div>
             
@@ -191,7 +191,7 @@ const LANDING = () => {
      <div className='bg-white py-16'>
        <div className="container mx-auto px-4">
            <Typography variant="h3" className="text-gray-800 text-center font-bold text-3xl mb-12 relative">
-             Title
+           Get Approved & Paid Faster
              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-pink-500 mt-2"></div>
            </Typography>
        </div>
@@ -230,7 +230,7 @@ const LANDING = () => {
        <div className='bg-white'>
            <div className='container mx-auto px-4'>
                <Typography variant='h3' className='text-gray-800 text-center font-bold text-3xl mb-12 relative'>
-                   Title 3
+               Instant Processing
                    <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-pink-500 mt-7'></div>
                </Typography>
            </div>
@@ -240,18 +240,16 @@ const LANDING = () => {
            <Card className="mt-6 w-65 shadow-lg shadow-pink-500/50">
                <CardHeader color="blue-gray" className="relative h-56">
                    <img
-                   src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
+                   src="./src/assets/imgLanding.jpg"
                    alt="card-image"
                    />
                </CardHeader>
                <CardBody>
                    <Typography variant="h5" color="blue-gray" className="mb-2">
-                   UI/UX Review Check
+                   ✔️ 24/7 Claim Tracking
                    </Typography>
                    <Typography>
-                   The place is close to Barceloneta Beach and bus stop just 2 min by
-                   walk and near to &quot;Naviglio&quot; where you can enjoy the main
-                   night life in Barcelona.
+                   "Check your claim status anytime, anywhere."
                    </Typography>
                </CardBody>
            </Card>
@@ -260,18 +258,16 @@ const LANDING = () => {
            <Card className="mt-6 w-65 shadow-lg shadow-pink-500/50">
                <CardHeader color="blue-gray" className="relative h-56">
                    <img
-                   src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
+                   src="./src/assets/img2.jpg"
                    alt="card-image"
                    />
                </CardHeader>
                <CardBody>
                    <Typography variant="h5" color="blue-gray" className="mb-2">
-                   UI/UX Review Check
+                   📑 View My Claims
                    </Typography>
                    <Typography>
-                   The place is close to Barceloneta Beach and bus stop just 2 min by
-                   walk and near to &quot;Naviglio&quot; where you can enjoy the main
-                   night life in Barcelona.
+                   "Track your claims and check approval status."
                    </Typography>
                </CardBody>
            </Card>
@@ -280,18 +276,16 @@ const LANDING = () => {
            <Card className="mt-6 w-65 shadow-lg shadow-pink-500/50">
                <CardHeader color="blue-gray" className="relative h-56">
                    <img
-                   src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
+                   src="./src/assets/img3.jpg"
                    alt="card-image"
                    />
                </CardHeader>
                <CardBody>
                    <Typography variant="h5" color="blue-gray" className="mb-2">
-                   UI/UX Review Check
+                   🔒 End-to-End Encryption
                    </Typography>
                    <Typography>
-                   The place is close to Barceloneta Beach and bus stop just 2 min by
-                   walk and near to &quot;Naviglio&quot; where you can enjoy the main
-                   night life in Barcelona.
+                   "We protect your data with banking-level security."
                    </Typography>
                </CardBody>
            </Card>
@@ -302,7 +296,7 @@ const LANDING = () => {
        <div className='bg-white py-16'>
            <div className='container mx-auto px-4'>
                <Typography variant='h3' className='text-gray-800 text-center font-bold text-3xl mb-12 relative'>
-                   Title 3
+                 24/7 Claim Tracking
                    <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-pink-500 mt-7'></div>
                </Typography>
                <div className='p-20 gap-20'>

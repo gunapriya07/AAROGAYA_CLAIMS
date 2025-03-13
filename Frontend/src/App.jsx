@@ -9,6 +9,8 @@ import LANDING from './Components/Landing';
 // import Support from './Components/Patient/Support';
 // import SubmitClaim from './Components/Patient/SubmitClaim';
 // import Support from './Components/Patient/Support';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import RegisterPage from "";
 
 
 function App() {
