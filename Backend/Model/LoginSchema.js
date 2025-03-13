@@ -5,12 +5,12 @@ const LoginSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"], 
+    match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"],
   },
   password: {
     type: String,
     required: true,
-    minlength: 6, 
+    minlength: 6,
   },
   createdAt: {
     type: Date,
@@ -18,5 +18,4 @@ const LoginSchema = new mongoose.Schema({
   },
 });
 
-const User = mongoose.model("User", LoginSchema);
-module.exports = User;
+module.exports = mongoose.model("User", LoginSchema);
