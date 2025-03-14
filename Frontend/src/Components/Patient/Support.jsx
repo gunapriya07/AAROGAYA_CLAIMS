@@ -97,16 +97,37 @@ const Support = () => {
   };
 
   // Handle contact form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // In a real app, you would send this data to your backend
-    alert("Thank you for your message! Our support team will contact you soon.");
-    setContactForm({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+    // alert("Thank you for your message! Our support team will contact you soon.");
+    console.log(contactForm);
+
+    try{
+      const response = await fetch('http://localhost:4001/questionapi/questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contactForm)
+      })
+
+      const data = await response.json();
+      if(response.ok){
+        alert('Question poster successfully')
+      }else{
+        alert('Failed to post question')
+      }
+      console.log('Question posted ', data);
+      setContactForm({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+    }catch(err){
+      console.log(err.message);
+    }
   };
 
   return (

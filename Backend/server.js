@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const routes = require("./routes");
 const claimsRouter = require("./Route/claimsRouter");
 const QuestionsRouter = require("./Route/QuestionRouter");
+const cors = require('cors');
 
 
 const app = express();
@@ -13,6 +14,7 @@ const PORT = 4001;
 connectDB();
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use("/api", routes); 
 app.use("/claimapi", claimsRouter);

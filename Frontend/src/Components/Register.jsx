@@ -1,6 +1,11 @@
 import { useState } from "react";
 import React from "react";
 import bgImage from "../assets/image_bg.png";
+// import { useNavigate } from "react-router-dom";
+// import Main from "./Patient/Main";
+// import { Link } from "react-router-dom";
+
+
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -26,15 +31,36 @@ export default function Register() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.role === "insurer" && !formData.email.endsWith("@AAROGA")) {
-      setError("Insurers must use an @AAROGA email.");
+    if (formData.role === "insurer" && !formData.email.endsWith("@AAROGYA")) {
+      setError("Insurers must use an @AAROGYA email.");
       return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:4001/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Account created successfully");
+        window.location.href = '/Main';
+        
+      } else {
+        setError({ api: data.message });
+      }
+    } catch (err) {
+      setError(err.message);
+      console.log(err);
     }
     console.log("Form Submitted", formData);
   };
-
   return (
     <div
       style={{
@@ -45,8 +71,7 @@ export default function Register() {
       }}
       className="flex justify-center items-center"
     >
-<div className="p-8 rounded-lg shadow-2xl shadow-black/50 w-full max-w-md bg-transparent backdrop-blur-lg border border-white border-opacity-10">
-
+      <div className="p-8 rounded-lg shadow-2xl shadow-black/50 w-full max-w-md bg-transparent backdrop-blur-lg border border-white border-opacity-10">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Register
         </h2>
@@ -128,14 +153,23 @@ export default function Register() {
 
           {/* Continue with Google Button */}
           <button
-  type="button"
-  className="w-full bg-white text-black py-2 rounded-lg hover:bg-gray-200 transition mt-2 flex items-center justify-center space-x-2 shadow-md"
->
-  <img src="https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo-thumbnail.png" 
-       alt="Google Logo" className="w-5 h-5" />
-  <span>Continue with Google</span>
-</button>
+            type="button"
+            className="w-full bg-white text-black py-2 rounded-lg hover:bg-gray-200 transition mt-2 flex items-center justify-center space-x-2 shadow-md"
+          >
+            <img
+              src="https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo-thumbnail.png"
+              alt="Google Logo"
+              className="w-5 h-5"
+            />
+            <span>Continue with Google</span>
+          </button>
         </form>
+        <p className="text-center text-gray-700 mt-4">
+          Already have an account?{" "}
+          <a href="/signin" className="text-blue-500 hover:underline">
+            Sign in here
+          </a>
+        </p>
       </div>
     </div>
   );

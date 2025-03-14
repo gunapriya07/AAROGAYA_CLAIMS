@@ -9,7 +9,8 @@ const JWT_SECRET = "your_secret_key";
 // ✅ Register Route
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, isPatient, isInsurer } = req.body;
+    console.log(name, email, password, isPatient, isInsurer);
 
     // Check if user already exists
     const existingUser = await Register.findOne({ email });
@@ -17,19 +18,36 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    // **Validation for email based on role**
+    if (isInsurer && !email.toLowerCase().endsWith("@aarogya.com")) {
+      return res.status(400).json({ message: "Insurers must have an @AAROGYA.com email." });
+    }
+    if (isPatient && !email.toLowerCase().endsWith("@gmail.com")) {
+      return res.status(400).json({ message: "Patients must have a @gmail.com email." });
+    }
+
     // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new user
-    const newUser = new Register({ name, email, password: hashedPassword });
+    const newUser = new Register({
+      name,
+      email,
+      password: hashedPassword,
+      isPatient: Boolean(isPatient),
+      isInsurer: Boolean(isInsurer),
+    });
+
+    console.log("newUser ", newUser);
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully!" });
+    res.status(201).json({ message: "User registered successfully!", userDetails: { name, email, isPatient, isInsurer } });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 });
+
 
 // ✅ Login Route
 router.post("/login", async (req, res) => {

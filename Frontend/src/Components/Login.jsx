@@ -13,8 +13,27 @@ export default function Login() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
+    try{
+      const response = await fetch('http://localhost:4001/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = response.json();
+      if(response.ok){
+        alert('Account Logged In successfully');
+      }else{
+        alert('Failed to Login, Please try again');
+      }
+      console.log("Login successfull ", data)
+    }catch(err){
+      console.log(err.message);
+    }
     console.log("Login Submitted", formData);
   };
 
