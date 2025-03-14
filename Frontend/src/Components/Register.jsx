@@ -1,11 +1,8 @@
 import { useState } from "react";
 import React from "react";
 import bgImage from "../assets/image_bg.png";
-// import { useNavigate } from "react-router-dom";
-// import Main from "./Patient/Main";
-// import { Link } from "react-router-dom";
-
-
+import { auth } from "../firebase"; // Make sure this path is correct
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -51,16 +48,55 @@ export default function Register() {
       if (response.ok) {
         alert("Account created successfully");
         window.location.href = '/Main';
-        
       } else {
-        setError({ api: data.message });
+        setError(data.message);
       }
     } catch (err) {
       setError(err.message);
       console.log(err);
     }
-    console.log("Form Submitted", formData);
   };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      
+      // Get user information from Google account
+      const user = result.user;
+      
+      // Prepare data for your API
+      const googleUserData = {
+        name: user.displayName || "",
+        email: user.email || "",
+        password: "", // You might want to handle this differently for Google users
+        role: formData.role, // Use the selected role from your form
+        googleUid: user.uid,
+      };
+      
+      // Register the user in your backend
+      const response = await fetch("http://localhost:4001/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(googleUserData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Account created successfully with Google");
+        window.location.href = '/Main';
+      } else {
+        setError(data.message);
+      }
+      
+    } catch (err) {
+      console.error("Google Sign-In error:", err);
+      setError(err.message);
+    }
+  };
+
   return (
     <div
       style={{
@@ -150,20 +186,21 @@ export default function Register() {
           >
             Register
           </button>
-
-          {/* Continue with Google Button */}
-          <button
-            type="button"
-            className="w-full bg-white text-black py-2 rounded-lg hover:bg-gray-200 transition mt-2 flex items-center justify-center space-x-2 shadow-md"
-          >
-            <img
-              src="https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo-thumbnail.png"
-              alt="Google Logo"
-              className="w-5 h-5"
-            />
-            <span>Continue with Google</span>
-          </button>
         </form>
+
+        {/* Continue with Google Button */}
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full bg-white text-black py-2 rounded-lg hover:bg-gray-200 transition mt-4 flex items-center justify-center space-x-2 shadow-md"
+        >
+          <img
+            src="https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo-thumbnail.png"
+            alt="Google Logo"
+            className="w-5 h-5"
+          />
+          <span>Continue with Google</span>
+        </button>
+
         <p className="text-center text-gray-700 mt-4">
           Already have an account?{" "}
           <a href="/signin" className="text-blue-500 hover:underline">
