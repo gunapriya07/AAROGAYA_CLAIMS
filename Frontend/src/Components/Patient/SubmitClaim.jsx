@@ -99,7 +99,7 @@ const SubmitClaims= () => {
      console.log(pair[0], pair[1]);
    }
     try {
-     const response = await fetch("http://localhost:4001/claimapi/claims", {
+     const response = await fetch("https://aarogaya-claims.onrender.com/claimapi/claims", {
        method: "POST",
        body: formDataToSend,
      });

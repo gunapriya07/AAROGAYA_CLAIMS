@@ -111,7 +111,7 @@ const Support = () => {
 
 
    try{
-     const response = await fetch('http://localhost:4001/questionapi/questions', {
+     const response = await fetch('https://aarogaya-claims.onrender.com/questionapi/questions', {
        method: 'POST',
        headers: {
          'Content-Type': 'application/json'

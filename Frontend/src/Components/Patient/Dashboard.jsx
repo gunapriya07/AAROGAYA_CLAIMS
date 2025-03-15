@@ -16,7 +16,7 @@ const Dashboard = () => {
  useEffect(() => {
    const fetchClaims = async () => {
      try {
-       const response = await fetch('http://localhost:4001/claimapi/claims');
+       const response = await fetch('https://aarogaya-claims.onrender.com/claimapi/claims');
        if (!response.ok) {
          throw new Error("Failed to fetch claims");
        }
@@ -55,7 +55,7 @@ const Dashboard = () => {
      return;
    }
    try {
-     const response = await fetch(`http://localhost:4001/claimapi/claims/${claimId}`, {
+     const response = await fetch(`https://aarogaya-claims.onrender.com/claimapi/claims/${claimId}`, {
        method: "PATCH",
        headers: { "Content-Type": "application/json" },
        body: JSON.stringify({ status: newStatus }),
