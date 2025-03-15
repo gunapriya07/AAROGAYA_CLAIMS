@@ -50,7 +50,7 @@ export default function Register() {
  
  
     try {
-      const response = await fetch("https://aarogaya-claims.onrender.com/register", {
+      const response = await fetch("https://aarogaya-claims.onrender.com/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,7 +96,7 @@ export default function Register() {
       };
       
       // Register the user in your backend
-      const response = await fetch("http://localhost:4001/api/register", {
+      const response = await fetch("https://aarogaya-claims.onrender.com/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
