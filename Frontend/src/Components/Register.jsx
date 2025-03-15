@@ -9,32 +9,46 @@ export default function Register() {
     name: "",
     email: "",
     password: "",
-    role: "patient",
+    isPatient: false,
+    isInsurer: false,
+    role:""
   });
 
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    // Email validation for insurers
-    if (name === "email" && formData.role === "insurer") {
-      if (!value.endsWith("@AAROGA")) {
-        setError("Insurers must use an @AAROGA email.");
+    let updatedFormData = { ...formData, [name]: value };
+ 
+ 
+    if (name === "role") {
+      updatedFormData = {
+        ...updatedFormData,
+        isPatient: value === "patient",
+        isInsurer: value === "insurer"
+      };
+    }
+ 
+ 
+    if (name === "email" && updatedFormData.role === "insurer") {
+      if (!value.endsWith("@AAROGYA")) {
+        setError("Insurers must use an @AAROGYA email.");
       } else {
         setError("");
       }
     }
+    setFormData(updatedFormData);
   };
-
+ 
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.role === "insurer" && !formData.email.endsWith("@AAROGYA")) {
+    if (formData.role === "insurer" && !formData.email.endsWith("@AAROGYA.com")) {
       setError("Insurers must use an @AAROGYA email.");
       return;
     }
-
+ 
+ 
     try {
       const response = await fetch("http://localhost:4001/api/register", {
         method: "POST",
@@ -43,19 +57,26 @@ export default function Register() {
         },
         body: JSON.stringify(formData),
       });
-
+ 
+ 
       const data = await response.json();
       if (response.ok) {
         alert("Account created successfully");
+        localStorage.setItem("username", formData.name);
+        localStorage.setItem("email", formData.email);
+        localStorage.setItem("isInsurer", formData.isInsurer);
+        localStorage.setItem("isPatient", formData.isPatient);
         window.location.href = '/Main';
+
       } else {
         setError(data.message);
       }
     } catch (err) {
       setError(err.message);
-      console.log(err);
     }
   };
+ 
+ 
 
   const handleGoogleSignIn = async () => {
     try {
