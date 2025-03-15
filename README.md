@@ -5,7 +5,7 @@ The Health Claims Management System is a web-based application designed to strea
 The platform allows both patients and insurers to track the status of claims efficiently. With Google Authentication,
  users can securely log in and access their claim details. The system ensures transparency and ease of use in handling health-related claims.
 
-Features
+**Features**
 
 Google Authentication for secure login.
 
@@ -29,7 +29,7 @@ Database: MongoDB
 
 Authentication: Google OAuth
 
-Installation
+**Installation**
 
 Clone the repository:
 
@@ -37,7 +37,7 @@ git clone https://github.com/yourusername/health-claims-management.git
 
 Navigate to the project directory:
 
-cd health-claims-management
+
 
 Install dependencies:
 
@@ -45,25 +45,19 @@ npm install
 
 Start the development server:
 
-npm start
+npm run dev
 
 Open the app in your browser:
 
-http://localhost:3000
+https://incandescent-meerkat-1deac1.netlify.app/
 
-Usage
 
-Sign in with Google to access the platform.
+**Frontend Deployment:** https://incandescent-meerkat-1deac1.netlify.app/
 
-Patients can submit new claims and check their status.
+**Backend Deployment:** https://aarogaya-claims.onrender.com
 
-Insurers can review and approve/reject claims.
 
-Track real-time updates on the claim process.
 
-Contributing
-
-Contributions are welcome! If you have any suggestions, please create an issue or submit a pull request.
 
 
 
