@@ -33,7 +33,7 @@ Authentication: Google OAuth
 
 Clone the repository:
 
-git clone https://github.com/yourusername/health-claims-management.git
+git clone https://github.com/gunapriya07/health-claims-management.git
 
 Navigate to the project directory:
 
