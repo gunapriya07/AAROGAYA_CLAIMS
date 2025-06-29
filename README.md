@@ -35,7 +35,6 @@ Clone the repository:
 
 git clone https://github.com/gunapriya07/health-claims-management.git
 
-Navigate to the project directory:
 
 
 
