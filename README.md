@@ -36,8 +36,6 @@ Clone the repository:
 git clone https://github.com/gunapriya07/health-claims-management.git
 
 
-
-
 Install dependencies:
 
 npm install
