@@ -1,7 +1,7 @@
-# Health Claims Management System
+# AAROGAYA Claims Management System
 
 **About the Project**
-The Health Claims Management System is a web-based application designed to streamline the process of managing health insurance claims.
+The a Claims Management System is a web-based application designed to streamline the process of managing health insurance claims.
 The platform allows both patients and insurers to track the status of claims efficiently. With Google Authentication,
  users can securely log in and access their claim details. The system ensures transparency and ease of use in handling health-related claims.
 
@@ -30,11 +30,6 @@ Database: MongoDB
 Authentication: Google OAuth
 
 **Installation**
-
-Clone the repository:
-
-git clone https://github.com/gunapriya07/health-claims-management.git
-
 
 Install dependencies:
 
