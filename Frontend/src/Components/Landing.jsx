@@ -4,6 +4,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 // import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 // import RegisterPage from "./Register";
 import { Link } from "react-router-dom";
+import logo from "../assets/download.webp";
+import imgLanding from "../assets/imgLanding.jpg";
+import img2 from "../assets/img2.jpg";
+import img3 from "../assets/img3.jpg";
 
 
 import {
@@ -19,7 +23,6 @@ import {
   AccordionBody,
 } from "@material-tailwind/react";
 import Footer from "./Footer";
-import logo from "../assets/download.webp";
 // import title_img from "../assets/download.webp";
 // Custom theme to match the design
 // import Register from "./Register";
@@ -308,7 +311,7 @@ const LANDING = () => {
         <div className="flex justify-center items-center gap-15">
           <Card className="mt-6 w-65 shadow-lg shadow-pink-500/50">
             <CardHeader color="blue-gray" className="relative h-56">
-              <img src="./src/assets/imgLanding.jpg" alt="card-image" />
+              <img src={imgLanding} alt="card-image" />
             </CardHeader>
             <CardBody>
               <Typography variant="h5" color="blue-gray" className="mb-2">
@@ -322,7 +325,7 @@ const LANDING = () => {
 
           <Card className="mt-6 w-65 shadow-lg shadow-pink-500/50">
             <CardHeader color="blue-gray" className="relative h-56">
-              <img src="./src/assets/img2.jpg" alt="card-image" />
+              <img src={img2} alt="card-image" />
             </CardHeader>
             <CardBody>
               <Typography variant="h5" color="blue-gray" className="mb-2">
@@ -336,7 +339,7 @@ const LANDING = () => {
 
           <Card className="mt-6 w-65 shadow-lg shadow-pink-500/50">
             <CardHeader color="blue-gray" className="relative h-56">
-              <img src="./src/assets/img3.jpg" alt="card-image" />
+              <img src={img3} alt="card-image" />
             </CardHeader>
             <CardBody>
               <Typography variant="h5" color="blue-gray" className="mb-2">

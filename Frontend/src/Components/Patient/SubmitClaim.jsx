@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_ENDPOINTS } from '../../config';
 
 
 
@@ -99,7 +100,7 @@ const SubmitClaims= () => {
      console.log(pair[0], pair[1]);
    }
     try {
-     const response = await fetch("https://aarogaya-claims.onrender.com/claimapi/claims", {
+     const response = await fetch(API_ENDPOINTS.claims, {
        method: "POST",
        body: formDataToSend,
      });

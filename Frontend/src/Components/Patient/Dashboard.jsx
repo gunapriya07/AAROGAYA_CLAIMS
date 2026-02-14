@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_ENDPOINTS } from '../../config';
 
 
 const Dashboard = () => {
@@ -16,7 +17,7 @@ const Dashboard = () => {
  useEffect(() => {
    const fetchClaims = async () => {
      try {
-       const response = await fetch('https://aarogaya-claims.onrender.com/claimapi/claims');
+       const response = await fetch(API_ENDPOINTS.claims);
        if (!response.ok) {
          throw new Error("Failed to fetch claims");
        }
@@ -55,7 +56,7 @@ const Dashboard = () => {
      return;
    }
    try {
-     const response = await fetch(`https://aarogaya-claims.onrender.com/claimapi/claims/${claimId}`, {
+     const response = await fetch(`${API_ENDPOINTS.claims}/${claimId}`, {
        method: "PATCH",
        headers: { "Content-Type": "application/json" },
        body: JSON.stringify({ status: newStatus }),

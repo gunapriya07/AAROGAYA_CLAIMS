@@ -3,6 +3,7 @@ import React from "react";
 import bgImage from "../assets/image_bg.png";
 import { auth } from "../firebase"; // Make sure this path is correct
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { API_ENDPOINTS } from "../config";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -50,7 +51,7 @@ export default function Register() {
  
  
     try {
-      const response = await fetch("https://aarogaya-claims.onrender.com/api/register", {
+      const response = await fetch(API_ENDPOINTS.register, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,17 +87,23 @@ export default function Register() {
       // Get user information from Google account
       const user = result.user;
       
+      // Automatically assign role based on email domain
+      const email = user.email || "";
+      const isInsurerEmail = email.toLowerCase().includes("@aarogya") || 
+                            email.toLowerCase().endsWith("aarogya.com");
+      
       // Prepare data for your API
       const googleUserData = {
         name: user.displayName || "",
-        email: user.email || "",
-        password: "", // You might want to handle this differently for Google users
-        role: formData.role, // Use the selected role from your form
+        email: email,
+        password: `google_${user.uid}`, // Generate a password for Google users
+        isPatient: !isInsurerEmail,
+        isInsurer: isInsurerEmail,
         googleUid: user.uid,
       };
       
-      // Register the user in your backend
-      const response = await fetch("https://aarogaya-claims.onrender.com/api/register", {
+      // Use dedicated Google auth endpoint
+      const response = await fetch(API_ENDPOINTS.googleAuth, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +113,13 @@ export default function Register() {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Account created successfully with Google");
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("name", googleUserData.name);
+        localStorage.setItem("isInsurer", googleUserData.isInsurer);
+        localStorage.setItem("isPatient", googleUserData.isPatient);
+        
+        const roleType = googleUserData.isInsurer ? "Insurer" : "Patient";
+        alert(`Account created successfully with Google as ${roleType}`);
         window.location.href = '/Main';
       } else {
         setError(data.message);

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import React from "react";
 import bgImage from "../assets/login_img.jpeg";
-// import { auth } from "../firebase"; 
-// import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../firebase"; 
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { API_ENDPOINTS } from "../config";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ export default function Login() {
   const handleSubmit = async(e) => {
     e.preventDefault();
     try{
-      const response = await fetch('https://aarogaya-claims.onrender.com/api/login', {
+      const response = await fetch(API_ENDPOINTS.login, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -57,47 +58,59 @@ export default function Login() {
  
  
 
-  // const handleGoogleSignIn = async () => {
-  //   try {
-  //     const provider = new GoogleAuthProvider();
-  //     const result = await signInWithPopup(auth, provider);
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
       
-  //     Get user information from Google account
-  //     const user = result.user;
+      // Get user information from Google account
+      const user = result.user;
+      const email = user.email || "";
       
-  //     Send Google user info to backend to verify/login
-  //     const googleUserData = {
-  //       email: user.email,
-  //       googleUid: user.uid
-  //     };
+      // Automatically assign role based on email domain
+      const isInsurerEmail = email.toLowerCase().includes("@aarogya") || 
+                            email.toLowerCase().endsWith("aarogya.com");
       
-  //     const response = await fetch('http://localhost:4001/api/google-login', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(googleUserData),
-  //     });
+      // Try to login/register the user - backend will handle existing users
+      const googleUserData = {
+        name: user.displayName || "",
+        email: email,
+        password: `google_${user.uid}`,
+        isPatient: !isInsurerEmail,
+        isInsurer: isInsurerEmail,
+        googleUid: user.uid,
+      };
+      
+      // Use dedicated Google auth endpoint that handles both login and registration
+      const response = await fetch(API_ENDPOINTS.googleAuth, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(googleUserData),
+      });
 
-  //     const data = await response.json();
+      const data = await response.json();
       
-  //     if (response.ok) {
-  //       alert('Successfully logged in with Google');
-  //       window.location.href = '/Main';
-  //     } else {
-  //       // Handle case where Google user doesn't exist in your database
-  //       if (data.message === "User not found") {
-  //         alert("No account found with this Google email. Please register first.");
-  //         window.location.href = '/register';
-  //       } else {
-  //         setError(data.message || "Login failed");
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error("Google Sign-In error:", err);
-  //     setError(err.message);
-  //   }
-  // };
+      // Handle both new registration and existing user login
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("name", data.name);
+        localStorage.setItem("isInsurer", data.isInsurer);
+        localStorage.setItem("isPatient", data.isPatient);
+        
+        const roleType = data.isInsurer ? "Insurer" : "Patient";
+        const action = data.message.includes("Login") ? "logged in" : "registered";
+        alert(`Successfully ${action} with Google as ${roleType}`);
+        window.location.href = '/Main';
+      } else {
+        setError(data.message || "Login failed");
+      }
+    } catch (err) {
+      console.error("Google Sign-In error:", err);
+      setError(err.message);
+    }
+  };
 
   return (
     <div
@@ -156,7 +169,7 @@ export default function Login() {
         </form>
 
         {/* Continue with Google Button */}
-        {/* <button
+        <button
           onClick={handleGoogleSignIn}
           className="w-full bg-white text-black py-2 rounded-lg hover:bg-gray-100 transition flex items-center justify-center space-x-2 shadow-md mt-4 border"
         >
@@ -166,7 +179,7 @@ export default function Login() {
             className="w-5 h-5"
           />
           <span>Continue with Google</span>
-        </button> */}
+        </button>
         
         <p className="text-center text-gray-700 mt-4">
           If you do not have an account?{" "}
