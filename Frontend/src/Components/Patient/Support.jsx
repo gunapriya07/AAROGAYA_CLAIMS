@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_ENDPOINTS } from '../../config';
 
 
 const Support = () => {
@@ -111,7 +112,7 @@ const Support = () => {
 
 
    try{
-     const response = await fetch('https://aarogaya-claims.onrender.com/questionapi/questions', {
+     const response = await fetch(API_ENDPOINTS.questions, {
        method: 'POST',
        headers: {
          'Content-Type': 'application/json'
