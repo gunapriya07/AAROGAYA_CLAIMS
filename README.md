@@ -41,10 +41,9 @@ npm run dev
 
 Open the app in your browser:
 
-https://incandescent-meerkat-1deac1.netlify.app/
+https://sweet-trifle-aec794.netlify.app/   &&  https://aarogaya-claims.onrender.com
 
-
-**Frontend Deployment:** https://incandescent-meerkat-1deac1.netlify.app/
+**Frontend Deployment:** https://sweet-trifle-aec794.netlify.app/
 
 **Backend Deployment:** https://aarogaya-claims.onrender.com
 
