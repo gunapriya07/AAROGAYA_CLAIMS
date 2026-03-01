@@ -1,4 +1,4 @@
-# AAROGAYA Claims 
+## AAROGAYA Claims 
 
 **About the Project**
 The a Claims Management System is a web-based application designed to streamline the process of managing health insurance claims.
