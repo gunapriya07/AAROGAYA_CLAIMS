@@ -17,6 +17,8 @@ export default function Register() {
     role: ""
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const redirectTimeout = React.useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +44,7 @@ export default function Register() {
     e.preventDefault();
     if (formData.role === "insurer" && !formData.email.endsWith("@AAROGYA.com")) {
       setError("Insurers must use an @AAROGYA email.");
+      setSuccess("");
       return;
     }
     try {
@@ -54,14 +57,18 @@ export default function Register() {
       });
       const data = await response.json();
       if (response.ok) {
-        alert("Account created successfully");
+        setSuccess("Account created successfully! Redirecting...");
+        setError("");
         localStorage.setItem("username", formData.name);
         localStorage.setItem("email", formData.email);
         localStorage.setItem("isInsurer", formData.isInsurer);
         localStorage.setItem("isPatient", formData.isPatient);
-        window.location.href = '/Main';
+        redirectTimeout.current = setTimeout(() => {
+          window.location.href = '/Main';
+        }, 1800);
       } else {
         setError(data.message);
+        setSuccess("");
       }
     } catch (err) {
       setError(err.message);
@@ -97,16 +104,26 @@ export default function Register() {
         localStorage.setItem("isInsurer", googleUserData.isInsurer);
         localStorage.setItem("isPatient", googleUserData.isPatient);
         const roleType = googleUserData.isInsurer ? "Insurer" : "Patient";
-        alert(`Account created successfully with Google as ${roleType}`);
-        window.location.href = '/Main';
+        setSuccess(`Account created successfully with Google as ${roleType}! Redirecting...`);
+        setError("");
+        redirectTimeout.current = setTimeout(() => {
+          window.location.href = '/Main';
+        }, 1800);
       } else {
         setError(data.message);
+        setSuccess("");
       }
     } catch (err) {
       console.error("Google Sign-In error:", err);
       setError(err.message);
     }
   };
+
+  React.useEffect(() => {
+    return () => {
+      if (redirectTimeout.current) clearTimeout(redirectTimeout.current);
+    };
+  }, []);
 
   return (
     <>
@@ -125,6 +142,16 @@ export default function Register() {
         <div className="flex-1 flex items-center justify-center mb-12">
           <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
             <h2 className="text-3xl font-serif font-bold text-center mb-6 text-gray-900">Create your account</h2>
+            {success && (
+              <div className="mb-4 text-green-600 bg-green-50 border border-green-200 rounded px-4 py-2 text-center font-semibold">
+                {success}
+              </div>
+            )}
+            {error && (
+              <div className="mb-4 text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 text-center font-semibold">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-gray-700 font-semibold mb-1">Name</label>

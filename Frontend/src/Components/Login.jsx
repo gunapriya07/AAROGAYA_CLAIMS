@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRef } from "react";
 import React from "react";
 import { Link } from "react-router-dom";
 import Footer from "./Footer";
@@ -13,6 +14,8 @@ export default function Login() {
     password: "",
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const redirectTimeout = useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,18 +38,18 @@ export default function Login() {
         localStorage.setItem("name", data.name);
         localStorage.setItem("isInsurer", data.isInsurer);
         localStorage.setItem("isPatient", data.isPatient);
-        if (data.isInsurer) {
-          alert('Insurer logged in successfully');
+        setSuccess(data.isInsurer ? "Insurer logged in successfully! Redirecting..." : "Patient logged in successfully! Redirecting...");
+        setError("");
+        redirectTimeout.current = setTimeout(() => {
           window.location.href = '/Main';
-        } else {
-          alert('Patient logged in successfully');
-          window.location.href = '/Main';
-        }
+        }, 1800);
       } else {
         setError('Failed to Login, Please try again');
+        setSuccess("");
       }
     } catch (err) {
       setError(err.message);
+      setSuccess("");
     }
   };
 
@@ -80,15 +83,25 @@ export default function Login() {
         localStorage.setItem("isPatient", data.isPatient);
         const roleType = data.isInsurer ? "Insurer" : "Patient";
         const action = data.message && data.message.includes("Login") ? "logged in" : "registered";
-        alert(`Successfully ${action} with Google as ${roleType}`);
-        window.location.href = '/Main';
+        setSuccess(`Successfully ${action} with Google as ${roleType}! Redirecting...`);
+        setError("");
+        redirectTimeout.current = setTimeout(() => {
+          window.location.href = '/Main';
+        }, 1800);
       } else {
         setError(data.message || "Login failed");
+        setSuccess("");
       }
     } catch (err) {
       setError(err.message);
     }
   };
+
+  React.useEffect(() => {
+    return () => {
+      if (redirectTimeout.current) clearTimeout(redirectTimeout.current);
+    };
+  }, []);
 
   return (
     <>
@@ -107,6 +120,16 @@ export default function Login() {
         <div className="flex-1 flex items-center justify-center mb-12">
           <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
             <h2 className="text-3xl font-serif font-bold text-center mb-6 text-gray-900">Sign in to your account</h2>
+            {success && (
+              <div className="mb-4 text-green-600 bg-green-50 border border-green-200 rounded px-4 py-2 text-center font-semibold">
+                {success}
+              </div>
+            )}
+            {error && (
+              <div className="mb-4 text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 text-center font-semibold">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-gray-700 font-semibold mb-1">Email</label>
