@@ -2,33 +2,46 @@ import React, { useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../../config';
 
 
+
 const Dashboard = () => {
- const [claims, setClaims] = useState([]);
- const [selectedClaim, setSelectedClaim] = useState(null);
- const [showDetailModal, setShowDetailModal] = useState(false);
- const [statusFilter, setStatusFilter] = useState("all");
- const [errorMessage, setErrorMessage] = useState("");
+  const [claims, setClaims] = useState([]);
+  const [selectedClaim, setSelectedClaim] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [userName, setUserName] = useState("");
 
+  const isInsurer = localStorage.getItem('isInsurer') === 'true';
+  console.log("isInsurer ", isInsurer);
 
- const isInsurer = localStorage.getItem('isInsurer') === 'true';
- console.log("isInsurer ", isInsurer);
+  useEffect(() => {
+    // Fetch user name and email from localStorage
+    const storedName = localStorage.getItem("name") || localStorage.getItem("username") || "User";
+    setUserName(storedName);
+    const storedEmail = localStorage.getItem("email") || "";
 
-
- useEffect(() => {
-   const fetchClaims = async () => {
-     try {
-       const response = await fetch(API_ENDPOINTS.claims);
-       if (!response.ok) {
-         throw new Error("Failed to fetch claims");
-       }
-       const data = await response.json();
-       setClaims(data);
-     } catch (err) {
-       console.error(err.message);
-     }
-   };
-   fetchClaims();
- }, []);
+    const fetchClaims = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.claims);
+        if (!response.ok) {
+          throw new Error("Failed to fetch claims");
+        }
+        let data = await response.json();
+        // If not insurer, filter claims to only those raised by the logged-in user
+        if (!isInsurer) {
+          data = data.filter(claim => {
+            // Match by email (preferred) or by name fallback
+            return (claim.email && storedEmail && claim.email === storedEmail) ||
+                   (claim.name && storedName && claim.name === storedName);
+          });
+        }
+        setClaims(data);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    fetchClaims();
+  }, []);
 
 
  const filteredClaims = statusFilter === "all"
@@ -164,121 +177,121 @@ const Dashboard = () => {
    );
  };
   return (
-  <div className="container mx-auto px-4 py-8">
-    <h1 className="text-3xl font-bold mb-8">Patient Claims Dashboard</h1>
-   
-    <div className="mb-4">
-      <div className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
-        {isInsurer ? "Insurer View" : "Patient View"}
-      </div>
-    </div>
-  
-    {/* Filters */}
-    <div className="flex flex-wrap items-center justify-between mb-6">
-      <div className="mb-4 md:mb-0">
-        <h2 className="text-xl font-semibold mb-2">Claims Status</h2>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setStatusFilter("all")}
-            className={`px-4 py-2 rounded-md ${statusFilter === "all" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setStatusFilter("Pending")}
-            className={`px-4 py-2 rounded-md ${statusFilter === "pending" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
-          >
-            Pending
-          </button>
-          <button
-            onClick={() => setStatusFilter("Approved")}
-            className={`px-4 py-2 rounded-md ${statusFilter === "approved" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
-          >
-            Approved
-          </button>
-          <button
-            onClick={() => setStatusFilter("Rejected")}
-            className={`px-4 py-2 rounded-md ${statusFilter === "rejected" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
-          >
-            Rejected
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-10 px-2">
+      <div className="max-w-6xl mx-auto">
+        {/* Header Card */}
+        <div className="bg-white/90 rounded-2xl shadow-xl p-8 flex flex-col md:flex-row md:items-center md:justify-between mb-8 border border-blue-100">
+          <div>
+            <h1 className="text-3xl font-serif font-bold text-gray-900 mb-1">Welcome back, <span className="text-blue-600">{userName}</span></h1>
+            <p className="text-gray-500 text-lg">{isInsurer ? 'Insurer' : 'Patient'} Claims Dashboard</p>
+          </div>
+          <div className="flex gap-8 mt-6 md:mt-0">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{claims.length}</div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">Total Claims</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{claims.filter(c => c.status === 'Approved').length}</div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">Approved</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-500">{claims.filter(c => c.status === 'Pending').length}</div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">Pending</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-500">{claims.filter(c => c.status === 'Rejected').length}</div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">Rejected</div>
+            </div>
+          </div>
         </div>
-      </div>
-    
-      <div>
-        <input
-          type="text"
-          placeholder="Search claims..."
-          className="px-4 py-2 border rounded-md w-full md:w-auto"
-        />
+
+        {/* Filters & Search */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+          <div className="flex gap-2">
+            {['all', 'Pending', 'Approved', 'Rejected'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-5 py-2 rounded-full font-semibold shadow-sm transition-all text-sm
+                  ${statusFilter === status ? 'bg-blue-600 text-white' : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-50'}`}
+              >
+                {status === 'all' ? 'All' : status}
+              </button>
+            ))}
+          </div>
+          <div>
+            <input
+              type="text"
+              placeholder="Search claims..."
+              className="px-4 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white"
+            />
+          </div>
+        </div>
+
+        {/* Claims Table Card */}
+        <div className="bg-white/90 rounded-2xl shadow-lg border border-blue-100 overflow-x-auto">
+          <table className="min-w-full divide-y divide-blue-100">
+            <thead className="bg-blue-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Patient</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Amount</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Submission Date</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-blue-50">
+              {filteredClaims.map((claim, idx) => (
+                <tr key={claim._id} className={idx % 2 === 0 ? 'bg-white' : 'bg-blue-50 hover:bg-blue-100'}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div>
+                        <div className="text-sm font-semibold text-gray-900">{claim.name}</div>
+                        <div className="text-xs text-gray-500">{claim.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-blue-900 font-medium">${claim.amount}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-xs text-gray-700">{claim.createdAt}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <StatusBadge status={claim.status} />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <button
+                      onClick={() => handleViewDetails(claim)}
+                      className="text-blue-600 hover:text-blue-800 font-semibold underline underline-offset-2"
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Floating New Claim Button (for patients) */}
+        {!isInsurer && (
+          <div className="fixed bottom-8 right-8 z-50">
+            <a href="/SubmitClaim">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-xl font-bold text-lg flex items-center gap-2">
+                + New Claim
+              </button>
+            </a>
+          </div>
+        )}
+
+        {/* Modal */}
+        {showDetailModal && selectedClaim && (
+          <ClaimDetailModal claim={selectedClaim} onClose={handleCloseModal} />
+        )}
       </div>
     </div>
-  
-    {/* Claims Table */}
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Patient
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Amount
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Submission Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {filteredClaims.map((claim) => (
-            <tr key={claim._id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {claim.name}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {claim.email}
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">${claim.amount}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{claim.createdAt}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <StatusBadge status={claim.status} />
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <button
-                  onClick={() => handleViewDetails(claim)}
-                  className="text-blue-600 hover:text-blue-900 font-medium"
-                >
-                  View Details
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  
-    {showDetailModal && selectedClaim && (
-      <ClaimDetailModal claim={selectedClaim} onClose={handleCloseModal} />
-    )}
-  </div>
-);
+  );
 };
 
 

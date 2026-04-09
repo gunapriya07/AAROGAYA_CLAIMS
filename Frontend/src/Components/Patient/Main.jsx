@@ -1,16 +1,47 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+
+// Professional SVG icons
+const IconDashboard = () => (
+  <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="7" height="9" rx="2" />
+    <rect x="14" y="3" width="7" height="5" rx="2" />
+    <rect x="14" y="12" width="7" height="9" rx="2" />
+    <rect x="3" y="17" width="7" height="4" rx="2" />
+  </svg>
+);
+const IconClaims = () => (
+  <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M7 3v4M17 3v4" />
+    <path d="M8 10h8M8 14h5" />
+  </svg>
+);
+const IconSecurity = () => (
+  <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <polyline points="9 12 11 14 15 10" />
+  </svg>
+);
+const IconSupport = () => (
+  <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9 9a3 3 0 0 1 6 0c0 2-3 3-3 6" />
+    <circle cx="12" cy="17" r="1" />
+  </svg>
+);
 
 function Main({ children }) {  // Add children prop here
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activePage, setActivePage] = useState('Dashboard');
+  const [userName, setUserName] = useState('');
   const location = useLocation();
 
   // Update active page based on current URL
   useEffect(() => {
     const path = location.pathname.substring(1); // Remove leading slash
     const pageName = path || 'Dashboard';
-    
     // Map path to menu item name
     const pageNameMap = {
       'Dashboard': 'Dashboard',
@@ -19,8 +50,11 @@ function Main({ children }) {  // Add children prop here
       'Support': 'Support & FAQs',
       'Profile': 'Profile'
     };
-    
     setActivePage(pageNameMap[pageName] || 'Dashboard');
+
+    // Fetch user name from localStorage
+    const storedName = localStorage.getItem('name') || localStorage.getItem('username') || 'User';
+    setUserName(storedName);
   }, [location]);
 
   const toggleSidebar = () => {
@@ -28,10 +62,10 @@ function Main({ children }) {  // Add children prop here
   };
 
   const menuItems = [
-    { name: 'Dashboard', icon: '📊', path: '/Dashboard' },
-    { name: 'Claims Management', icon: '📝', path: '/SubmitClaim' },
-    { name: 'Security & Privacy', icon: '🔒', path: '/Security' },
-    { name: 'Support & FAQs', icon: '🙋🏻‍♂️', path: '/Support' }
+    { name: 'Dashboard', icon: <IconDashboard />, path: '/Dashboard' },
+    { name: 'Claims Management', icon: <IconClaims />, path: '/SubmitClaim' },
+    { name: 'Security & Privacy', icon: <IconSecurity />, path: '/Security' },
+    { name: 'Support & FAQs', icon: <IconSupport />, path: '/Support' }
   ];
 
   return (
@@ -80,11 +114,11 @@ function Main({ children }) {  // Add children prop here
             <div className="flex items-center space-x-3 hover:bg-indigo-200 p-2 rounded-lg transition-colors">
               <img 
                 src="/api/placeholder/40/40" 
-                alt="Dr. Smith" 
+                alt={userName}
                 className="rounded-full border-2 border-indigo-300"
               />
               <div>
-                <p className="font-medium text-gray-800">Dr. Smith</p>
+                <p className="font-medium text-gray-800">{userName}</p>
                 <p className="text-xs text-gray-500">View Profile</p>
               </div>
             </div>
@@ -98,7 +132,7 @@ function Main({ children }) {  // Add children prop here
         <header className="bg-white shadow-sm p-4 flex justify-between items-center">
           <div>
             <h1 className="text-xl font-semibold text-gray-800">{activePage}</h1>
-            <p className="text-sm text-gray-500">Welcome back, Dr. Smith</p>
+            <p className="text-sm text-gray-500">Welcome back, {userName}</p>
           </div>
           
           <div className="flex items-center space-x-4">
