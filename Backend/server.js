@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const routes = require("./routes");
 const claimsRouter = require("./Route/claimsRouter");
 const QuestionsRouter = require("./Route/QuestionRouter");
+const profileRouter = require("./Route/profileRouter");
 const cors = require('cors');
 
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/api", routes); 
 app.use("/claimapi", claimsRouter);
 app.use("/questionapi",QuestionsRouter);
+app.use("/profileapi", profileRouter);
 
 // Basic Routes
 app.get("/", (req, res) => {

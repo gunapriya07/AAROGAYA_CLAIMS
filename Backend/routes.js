@@ -19,7 +19,7 @@ router.post("/register", async (req, res) => {
    if (existingUser) {
      // If user exists and this is a Google login, return success with token
      if (googleUid) {
-       const token = jwt.sign({ id: existingUser._id, email: existingUser.email }, JWT_SECRET, {
+       const token = jwt.sign({ id: existingUser._id, email: existingUser.email, name: existingUser.name }, JWT_SECRET, {
          expiresIn: "1h",
        });
        return res.status(200).json({ 
@@ -75,7 +75,14 @@ router.post("/register", async (req, res) => {
    await newUser.save();
 
 
-   res.status(201).json({ message: "User registered successfully!", userDetails: { name, email, isPatient, isInsurer } });
+   const token = jwt.sign({ id: newUser._id, email: newUser.email, name: newUser.name }, JWT_SECRET, { expiresIn: "1h" });
+   res.status(201).json({ 
+     message: "User registered successfully!", 
+     token, 
+     name, 
+     isPatient, 
+     isInsurer 
+   });
  } catch (error) {
    res.status(500).json({ message: "Server error", error });
  }
@@ -104,10 +111,9 @@ router.post("/login", async (req, res) => {
 
 
    // Generate JWT Token
-   const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+   const token = jwt.sign({ id: user._id, email: user.email, name: user.name }, JWT_SECRET, {
      expiresIn: "1h",
    });
-
 
    res.status(200).json({
      message: "Login successful",
@@ -131,7 +137,7 @@ router.post("/google-auth", async (req, res) => {
 
     if (user) {
       // User exists - log them in
-      const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      const token = jwt.sign({ id: user._id, email: user.email, name: user.name }, JWT_SECRET, {
         expiresIn: "1h",
       });
 
@@ -165,7 +171,7 @@ router.post("/google-auth", async (req, res) => {
     await newUser.save();
 
     // Generate token for new user
-    const token = jwt.sign({ id: newUser._id, email: newUser.email }, JWT_SECRET, {
+    const token = jwt.sign({ id: newUser._id, email: newUser.email, name: newUser.name }, JWT_SECRET, {
       expiresIn: "1h",
     });
 

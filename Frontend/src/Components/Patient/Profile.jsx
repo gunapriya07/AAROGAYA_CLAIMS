@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import React from "react";
+import { API_BASE_URL } from '../../config';
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
   const [profileData, setProfileData] = useState({
@@ -42,15 +44,24 @@ export default function Profile() {
     setEditedData({...profileData});
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setProfileData({...editedData});
-      setIsEditing(false);
-      setIsSaving(false);
-    }, 800);
+    const userId = getUserIdFromToken();
+    if (!userId) return;
+    const payload = { ...editedData };
+    try {
+      const res = await fetch(`${API_BASE_URL}/profileapi/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProfileData({ ...profileData, ...data });
+        setIsEditing(false);
+      }
+    } catch {}
+    setIsSaving(false);
   };
 
   const handleEdit = () => {
@@ -80,10 +91,99 @@ export default function Profile() {
     return age;
   };
 
+  // Helper to get userId from JWT (for demo, you may want to use context/auth)
+  function getUserIdFromToken() {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.id;
+    } catch {
+      return null;
+    }
+  }
+
+  // Helper to get user info from JWT token
+  function getUserInfoFromToken() {
+    const token = localStorage.getItem('token');
+    if (!token) return {};
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        id: payload.id,
+        name: payload.name || '',
+        email: payload.email || ''
+      };
+    } catch {
+      return {};
+    }
+  }
+
+  // DEBUG: Print token and decoded info
+  console.log("JWT token in localStorage:", localStorage.getItem('token'));
+  const tokenInfo = getUserInfoFromToken();
+  console.log("Decoded token info:", tokenInfo);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { id: userId, name: tokenName, email: tokenEmail } = getUserInfoFromToken();
+    if (!userId) return;
+    fetch(`${API_BASE_URL}/profileapi/${userId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(async data => {
+        if (data) {
+          setProfileData({
+            ...profileData,
+            ...data,
+            accountCreated: data.createdAt || profileData.accountCreated
+          });
+          setEditedData({
+            ...profileData,
+            ...data,
+            accountCreated: data.createdAt || profileData.accountCreated
+          });
+          setIsEditing(false);
+        } else {
+          // If no profile, create one with token info
+          const payload = {
+            name: tokenName || '',
+            email: tokenEmail || '',
+          };
+          const res = await fetch(`${API_BASE_URL}/profileapi/${userId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            const newProfile = await res.json();
+            setProfileData({ ...profileData, ...newProfile });
+            setEditedData({ ...profileData, ...newProfile });
+            setIsEditing(false);
+          }
+        }
+      });
+    // eslint-disable-next-line
+  }, []);
+
+  // Sign out handler
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    navigate('/'); // Redirect to landing page
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-blue-600 mb-6">My Profile</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-blue-600">My Profile</h1>
+          <button
+            onClick={handleSignOut}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow transition"
+          >
+            Sign Out
+          </button>
+        </div>
         
         {/* Profile Card */}
         <div className="bg-white rounded-lg shadow-xl overflow-hidden mb-8">
@@ -144,11 +244,11 @@ export default function Profile() {
                       placeholder="Your Name"
                     />
                   ) : (
-                    profileData.name || "New User"
+                    profileData.name || getUserInfoFromToken().name || "New User"
                   )}
                 </h2>
                 <p className="text-blue-100">
-                  Member since {formatDate(profileData.accountCreated)}
+                  {profileData.email || getUserInfoFromToken().email || "No email"}
                 </p>
               </div>
               

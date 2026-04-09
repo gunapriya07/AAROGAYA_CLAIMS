@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [errorMessage, setErrorMessage] = useState("");
   const [userName, setUserName] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
 
   const isInsurer = localStorage.getItem('isInsurer') === 'true';
   console.log("isInsurer ", isInsurer);
@@ -75,19 +76,22 @@ const Dashboard = () => {
        body: JSON.stringify({ status: newStatus }),
      });
      if (response.ok) {
-       alert("Status updated successfully");
        const updatedClaim = await response.json();
+       console.log('PATCH response:', updatedClaim);
        setClaims(prevClaims =>
          prevClaims.map(claim =>
-           claim._id === claimId ? { ...claim, status: updatedClaim.status } : claim
+           claim._id === claimId ? { ...claim, status: updatedClaim.status || newStatus } : claim
          )
        );
-       window.location.reload();
+       setStatusMessage(`Status updated to '${updatedClaim.status || newStatus}' successfully.`);
+       setTimeout(() => setStatusMessage("") , 3000);
      } else {
-       alert("Failed to update status");
+       setStatusMessage("Failed to update status");
+       setTimeout(() => setStatusMessage("") , 3000);
      }
    } catch (error) {
-     console.error("Error updating claim:", error);
+     setStatusMessage("Error updating claim status");
+     setTimeout(() => setStatusMessage("") , 3000);
    }
  };
 
@@ -260,13 +264,29 @@ const Dashboard = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <StatusBadge status={claim.status} />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm flex items-center gap-2">
                     <button
                       onClick={() => handleViewDetails(claim)}
-                      className="text-blue-600 hover:text-blue-800 font-semibold underline underline-offset-2"
+                      className="text-blue-600 hover:text-blue-800 font-semibold underline underline-offset-2 mr-2"
                     >
                       View Details
                     </button>
+                    {isInsurer && (
+                      <div className="relative group">
+                        <label className="text-xs text-gray-500 mr-1"></label>
+                        <select
+                          value={claim.status}
+                          onChange={e => handleStatusChange(claim._id, e.target.value)}
+                          className="appearance-none px-3 py-2 border-2 border-blue-200 rounded-lg bg-white text-blue-700 font-semibold shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all hover:border-blue-400 cursor-pointer"
+                          title="Change claim status"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                        <span className="absolute left-0 -bottom-6 opacity-0 group-hover:opacity-100 bg-gray-700 text-white text-xs rounded px-2 py-1 pointer-events-none transition-opacity">Update status instantly</span>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

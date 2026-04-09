@@ -57,6 +57,7 @@ export default function Register() {
       });
       const data = await response.json();
       if (response.ok) {
+        localStorage.setItem("token", data.token);
         setSuccess("Account created successfully! Redirecting...");
         setError("");
         localStorage.setItem("username", formData.name);
@@ -100,11 +101,7 @@ export default function Register() {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("name", googleUserData.name);
-        localStorage.setItem("isInsurer", googleUserData.isInsurer);
-        localStorage.setItem("isPatient", googleUserData.isPatient);
-        const roleType = googleUserData.isInsurer ? "Insurer" : "Patient";
-        setSuccess(`Account created successfully with Google as ${roleType}! Redirecting...`);
+        setSuccess("Account created successfully! Redirecting...");
         setError("");
         redirectTimeout.current = setTimeout(() => {
           window.location.href = '/Main';
