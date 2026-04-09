@@ -1,5 +1,7 @@
 import { useState } from "react";
 import React from "react";
+import { Link } from "react-router-dom";
+import Footer from "./Footer";
 import bgImage from "../assets/login_img.jpeg";
 import { auth } from "../firebase"; 
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -10,7 +12,6 @@ export default function Login() {
     email: "",
     password: "",
   });
-  
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -18,60 +19,44 @@ export default function Login() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
+    try {
       const response = await fetch(API_ENDPOINTS.login, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData),
-      })
- 
- 
+      });
       const data = await response.json();
-      console.log(data);
-      if(response.ok){
+      if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("name", data.name);
         localStorage.setItem("isInsurer", data.isInsurer);
         localStorage.setItem("isPatient", data.isPatient);
- 
- 
-        if(data.isInsurer){
+        if (data.isInsurer) {
           alert('Insurer logged in successfully');
           window.location.href = '/Main';
-        }else{
+        } else {
           alert('Patient logged in successfully');
           window.location.href = '/Main';
         }
-      }else{
-        alert('Failed to Login, Please try again');
+      } else {
+        setError('Failed to Login, Please try again');
       }
-      console.log("Login successfull ", data)
-    }catch(err){
-      console.log(err.message);
+    } catch (err) {
+      setError(err.message);
     }
-    console.log("Login Submitted", formData);
   };
- 
- 
 
   const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      
-      // Get user information from Google account
       const user = result.user;
       const email = user.email || "";
-      
-      // Automatically assign role based on email domain
-      const isInsurerEmail = email.toLowerCase().includes("@aarogya") || 
-                            email.toLowerCase().endsWith("aarogya.com");
-      
-      // Try to login/register the user - backend will handle existing users
+      const isInsurerEmail = email.toLowerCase().includes("@aarogya") || email.toLowerCase().endsWith("aarogya.com");
       const googleUserData = {
         name: user.displayName || "",
         email: email,
@@ -80,8 +65,6 @@ export default function Login() {
         isInsurer: isInsurerEmail,
         googleUid: user.uid,
       };
-      
-      // Use dedicated Google auth endpoint that handles both login and registration
       const response = await fetch(API_ENDPOINTS.googleAuth, {
         method: 'POST',
         headers: {
@@ -89,89 +72,82 @@ export default function Login() {
         },
         body: JSON.stringify(googleUserData),
       });
-
       const data = await response.json();
-      
-      // Handle both new registration and existing user login
       if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("name", data.name);
         localStorage.setItem("isInsurer", data.isInsurer);
         localStorage.setItem("isPatient", data.isPatient);
-        
         const roleType = data.isInsurer ? "Insurer" : "Patient";
-        const action = data.message.includes("Login") ? "logged in" : "registered";
+        const action = data.message && data.message.includes("Login") ? "logged in" : "registered";
         alert(`Successfully ${action} with Google as ${roleType}`);
         window.location.href = '/Main';
       } else {
         setError(data.message || "Login failed");
       }
     } catch (err) {
-      console.error("Google Sign-In error:", err);
       setError(err.message);
     }
   };
 
   return (
-    <div
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        height: "100vh",
-      }}
-      className="flex justify-center items-center"
-    >
-      <div className="p-8 rounded-lg shadow-2xl shadow-black/50 w-full max-w-md bg-transparent backdrop-blur-lg border border-white border-opacity-10">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Login
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
+    <>
+      {/* Minimal Navbar */}
+      <nav className="w-full bg-[#23283b] border-b border-[#23283b] py-3 px-6 flex items-center justify-between">
+        <Link to="/">
+          <span className="font-serif italic font-bold text-white text-xl tracking-tight cursor-pointer">
+            <span className="text-blue-400">AARO</span>GAYA
+          </span>
+        </Link>
+        <Link to="/register">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg">Register</button>
+        </Link>
+      </nav>
+      <div className="min-h-screen flex flex-col justify-between bg-gradient-to-br from-blue-50 to-blue-100 py-8 px-2">
+        <div className="flex-1 flex items-center justify-center mb-12">
+          <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+            <h2 className="text-3xl font-serif font-bold text-center mb-6 text-gray-900">Sign in to your account</h2>
+            <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-gray-700">Email</label>
+            <label className="block text-gray-700 font-semibold mb-1">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 placeholder-gray-400"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 placeholder-gray-400"
               required
               placeholder="Enter your email"
             />
           </div>
-
-          {/* Password */}
           <div>
-            <label className="block text-gray-700">Password</label>
+            <label className="block text-gray-700 font-semibold mb-1">Password</label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 placeholder-gray-400"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 placeholder-gray-400"
               required
               placeholder="Enter your password"
             />
           </div>
-
-          {/* Error message display */}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          {/* Submit Button */}
+          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition shadow-md"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold text-lg hover:bg-blue-700 transition shadow"
           >
             Login
           </button>
         </form>
-
-        {/* Continue with Google Button */}
+        <div className="my-4 flex items-center gap-2">
+          <div className="flex-1 h-px bg-gray-200"></div>
+          <span className="text-gray-400 text-xs">or</span>
+          <div className="flex-1 h-px bg-gray-200"></div>
+        </div>
         <button
           onClick={handleGoogleSignIn}
-          className="w-full bg-white text-black py-2 rounded-lg hover:bg-gray-100 transition flex items-center justify-center space-x-2 shadow-md mt-4 border"
+          className="w-full bg-white text-gray-800 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition flex items-center justify-center gap-2 shadow"
         >
           <img
             src="https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo-thumbnail.png"
@@ -180,14 +156,14 @@ export default function Login() {
           />
           <span>Continue with Google</span>
         </button>
-        
-        <p className="text-center text-gray-700 mt-4">
-          If you do not have an account?{" "}
-          <a href="/register" className="text-blue-500 hover:underline">
-            Register here
-          </a>
+        <p className="text-center text-gray-700 mt-6">
+          If you do not have an account?{' '}
+          <a href="/register" className="text-blue-600 hover:underline font-semibold">Register here</a>
         </p>
+          </div>
+        </div>
+        <Footer />
       </div>
-    </div>
+    </>
   );
 }
