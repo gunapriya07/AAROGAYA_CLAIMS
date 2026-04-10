@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { FaBell, FaEnvelope, FaRegHospital } from './Icons';
 
 // Professional SVG icons
 const IconDashboard = () => (
@@ -78,12 +79,18 @@ function Main({ children }) {  // Add children prop here
       >
         {/* Logo Area */}
         <div className="flex items-center justify-between p-4 border-b border-indigo-200">
-          <h2 className={`font-bold text-indigo-800 ${!sidebarOpen && 'hidden'}`}>AAROCYACLAIM</h2>
+          <div className="flex items-center gap-2">
+            <FaRegHospital size={28} className="text-blue-600" />
+            <h2 className={`font-bold text-indigo-800 text-lg tracking-tight ${!sidebarOpen && 'hidden'}`}> 
+              <span style={{ color: '#60a5fa' }}>AARO</span><span style={{ color: '#1e293b' }}>GAYA</span>
+            </h2>
+          </div>
           <button 
             onClick={toggleSidebar}
             className="p-1 rounded-full hover:bg-indigo-200 text-indigo-600"
+            aria-label="Toggle Sidebar"
           >
-            {sidebarOpen ? '◀' : '▶'}
+            {sidebarOpen ? <span>&#x25C0;</span> : <span>&#x25B6;</span>}
           </button>
         </div>
         
@@ -136,11 +143,11 @@ function Main({ children }) {  // Add children prop here
           </div>
           
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600">
-              🔔
+            <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600" aria-label="Notifications">
+              <FaBell size={20} />
             </button>
-            <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600">
-              ✉️
+            <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600" aria-label="Messages">
+              <FaEnvelope size={20} />
             </button>
             {sidebarOpen && (
               <Link to="/Profile" className="md:hidden">
