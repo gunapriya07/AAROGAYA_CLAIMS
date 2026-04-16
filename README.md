@@ -41,9 +41,9 @@ npm run dev
 
 Open the app in your browser:
 
-https://sweet-trifle-aec794.netlify.app/   &&  https://aarogaya-claims.onrender.com
+https://aarogaya-claims-dqyw.vercel.app/ &&  https://aarogaya-claims.onrender.com
 
-**Frontend Deployment:** https://sweet-trifle-aec794.netlify.app/
+**Frontend Deployment:** https://aarogaya-claims-dqyw.vercel.app/
 
 **Backend Deployment:** https://aarogaya-claims.onrender.com
 
