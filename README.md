@@ -41,7 +41,6 @@ npm run dev
 
 Open the app in your browser:
 
-https://aarogaya-claims-dqyw.vercel.app/ &&  https://aarogaya-claims.onrender.com
 
 **Frontend Deployment:** https://aarogaya-claims-dqyw.vercel.app/
 
